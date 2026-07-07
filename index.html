@@ -1,0 +1,158 @@
+<!--
+    Nombre: Juan Manuel Sanchez Castro
+    Matrícula: 2403230435
+    Grupo: 06IDPRMA
+    Proyecto Integrador - 2do Parcial
+    Frontend: Plataforma de Streaming "StreamFlix"
+-->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bootstrap-5.3.8-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <title>StreamFlix</title>
+</head>
+<body>
+
+    <!-- ================================================================
+         DIV PADRE 1: PANTALLA DE LOGIN
+         Visible al cargar la página. Se oculta al autenticar al usuario.
+    ================================================================ -->
+    <div id="contenedorLogin">
+        <div class="login-bg d-flex align-items-center justify-content-center min-vh-100">
+            <div class="login-card">
+
+                <!-- Logo -->
+                <div class="text-center mb-4">
+                    <h1 class="logo-text">Stream<span>Flix</span></h1>
+                    <p class="text-muted small">Inicia sesión para continuar</p>
+                </div>
+
+                <!-- Campo Usuario -->
+                <label class="form-label" for="inputUsuario">Usuario</label>
+                <input class="form-control mb-3" id="inputUsuario"
+                       type="text" placeholder="admin" autocomplete="username">
+
+                <!-- Campo Contraseña -->
+                <label class="form-label" for="inputContrasenia">Contraseña</label>
+                <input class="form-control mb-2" id="inputContrasenia"
+                       type="password" placeholder="••••••••" autocomplete="current-password">
+
+                <!-- Mensaje de error de credenciales (texto dinámico) -->
+                <div class="text-danger small mb-3" id="mensajeCredenciales" style="display: none;">
+                    ⚠️ Usuario o contraseña incorrectos.
+                </div>
+
+                <button class="btn btn-danger w-100 mt-1" id="btnLogin">Ingresar</button>
+
+                <p class="text-center text-muted mt-3 small">
+                    Credenciales de prueba: <strong>admin</strong> / <strong>12345</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+    <!-- ============= FIN DIV: LOGIN ============= -->
+
+
+    <!-- ================================================================
+         DIV PADRE 2: APLICACIÓN PRINCIPAL - PLATAFORMA DE STREAMING
+         Oculto al inicio. Se muestra cuando el login es exitoso.
+    ================================================================ -->
+    <div id="contenedorApp" style="display: none;">
+
+        <!-- ---- Navbar ---- -->
+        <nav class="navbar navbar-expand-lg navbar-dark app-navbar px-4">
+            <span class="navbar-brand logo-text fs-4">Stream<span>Flix</span></span>
+
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-4 gap-2">
+                    <!-- Los botones de navegación filtran el catálogo -->
+                    <li class="nav-item">
+                        <button class="nav-link btn-nav active" data-seccion="todos">Inicio</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link btn-nav" data-seccion="peliculas">Películas</button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link btn-nav" data-seccion="series">Series</button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Botón Cerrar Sesión -->
+            <button class="btn btn-outline-light ms-auto" id="btnLogout">Cerrar Sesión</button>
+        </nav>
+
+        <!-- ---- Hero Banner ---- -->
+        <div class="hero-banner d-flex align-items-end px-5 py-4">
+            <div>
+                <span class="badge bg-danger mb-2">Destacado</span>
+                <h2 class="text-white fw-bold">Bienvenido a StreamFlix</h2>
+                <p class="text-white-50">Explora nuestro catálogo de películas y series</p>
+            </div>
+        </div>
+
+        <!-- ---- Estado de carga / error de conexión ---- -->
+        <div class="container-fluid px-5 mt-3">
+            <div id="estadoCarga" class="text-center text-muted py-4" style="display: none;">
+                <div class="spinner-border text-danger" role="status"></div>
+                <p class="mt-2">Cargando catálogo...</p>
+            </div>
+            <div id="errorConexion" class="alert alert-warning" style="display: none;">
+                ⚠️ No se pudo conectar al servidor. Asegúrate de que el backend esté
+                corriendo con: <code>uvicorn main:app --reload</code>
+            </div>
+        </div>
+
+        <!-- ---- Sección: Películas ---- -->
+        <section id="seccionPeliculas" class="container-fluid px-5 mt-4">
+            <h4 class="seccion-titulo">🎬 Películas</h4>
+            <!-- Las tarjetas se inyectan dinámicamente aquí con innerHTML -->
+            <div class="row g-3" id="gridPeliculas"></div>
+        </section>
+
+        <!-- ---- Sección: Series ---- -->
+        <section id="seccionSeries" class="container-fluid px-5 mt-5 mb-5">
+            <h4 class="seccion-titulo">📺 Series</h4>
+            <!-- Las tarjetas se inyectan dinámicamente aquí con innerHTML -->
+            <div class="row g-3" id="gridSeries"></div>
+        </section>
+
+        <!-- ---- Footer ---- -->
+        <footer class="app-footer text-center py-3">
+            <p class="text-muted small mb-0">© 2025 StreamFlix — Juan Manuel Sanchez Castro</p>
+        </footer>
+
+    </div>
+    <!-- ============= FIN DIV: APLICACIÓN PRINCIPAL ============= -->
+
+
+    <!-- ================================================================
+         MODAL DE ERROR (Bootstrap) - Validación de campos vacíos
+    ================================================================ -->
+    <div class="modal fade" id="modalError" tabindex="-1"
+         aria-labelledby="modalErrorLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-oscuro">
+                <div class="modal-header bg-danger text-white border-0">
+                    <h5 class="modal-title" id="modalErrorLabel">⚠️ Error de Validación</h5>
+                    <button type="button" class="btn-close btn-close-white"
+                            data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <!-- Texto del error se inserta dinámicamente desde scripts.js -->
+                <div class="modal-body" id="modalErrorBody"></div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============= FIN MODAL ============= -->
+
+    <script src="bootstrap-5.3.8-dist/js/bootstrap.min.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
